@@ -7,6 +7,7 @@
 #include "PeripheralPins.h"
 #include "CodalFiber.h"
 #include "ErrorNo.h"
+#include "XtronSerial.h"
 
 using namespace codal;
 
@@ -96,29 +97,32 @@ void ZSingleWireSerial::_complete(uint32_t instance, uint32_t mode)
     }
 }
 
-extern "C" void HAL_UART_TxCpltCallback(UART_HandleTypeDef *hspi)
-{
-    ZSingleWireSerial::_complete((uint32_t)hspi->Instance, SWS_EVT_DATA_SENT);
-}
+// extern "C" void HAL_UART_TxCpltCallback(UART_HandleTypeDef *hspi)
+// {
+//     ZSingleWireSerial::_complete((uint32_t)hspi->Instance, SWS_EVT_DATA_SENT);
+//     XtronSerial::_complete((uint32_t)hspi->Instance, SWS_EVT_DATA_SENT);
+// }
 
-extern "C" void HAL_UART_RxCpltCallback(UART_HandleTypeDef *hspi)
-{
-    ZSingleWireSerial::_complete((uint32_t)hspi->Instance, SWS_EVT_DATA_RECEIVED);
-}
+// extern "C" void HAL_UART_RxCpltCallback(UART_HandleTypeDef *hspi)
+// {
+//     ZSingleWireSerial::_complete((uint32_t)hspi->Instance, SWS_EVT_DATA_RECEIVED);
+//     XtronSerial::_complete((uint32_t)hspi->Instance, SWS_EVT_DATA_RECEIVED);
+// }
 
-extern "C" void HAL_UART_ErrorCallback(UART_HandleTypeDef *hspi)
-{
-    ZSingleWireSerial::_complete((uint32_t)hspi->Instance, SWS_EVT_ERROR);
-}
+// extern "C" void HAL_UART_ErrorCallback(UART_HandleTypeDef *hspi)
+// {
+//     ZSingleWireSerial::_complete((uint32_t)hspi->Instance, SWS_EVT_ERROR);
+//     XtronSerial::_complete((uint32_t)hspi->Instance, SWS_EVT_ERROR);
+// }
 
-#define DEFIRQ(nm, id)                                                                             \
-    extern "C" void nm() { ZSingleWireSerial::_complete(id, 0); }
+////// #define DEFIRQ(nm, id)                                                                            
+//////     extern "C" void nm() { ZSingleWireSerial::_complete(id, 0); XtronSerial::_complete(id, 0);}
 
-DEFIRQ(USART1_IRQHandler, USART1_BASE)
-DEFIRQ(USART2_IRQHandler, USART2_BASE)
-#ifdef USART6_BASE
-DEFIRQ(USART6_IRQHandler, USART6_BASE)
-#endif
+// DEFIRQ(USART1_IRQHandler, USART1_BASE)
+// DEFIRQ(USART2_IRQHandler, USART2_BASE)
+// #ifdef USART6_BASE
+// DEFIRQ(USART6_IRQHandler, USART6_BASE)
+// #endif
 
 
 void ZSingleWireSerial::configureRxInterrupt(int enable)
@@ -131,36 +135,36 @@ ZSingleWireSerial::ZSingleWireSerial(Pin& p) : DMASingleWireSerial(p)
     ZERO(hdma_tx);
     ZERO(hdma_rx);
 
-    // only the TX pin is operable in half-duplex mode
-    uart.Instance = (USART_TypeDef *)pinmap_peripheral(p.name, PinMap_UART_TX);
+    // // only the TX pin is operable in half-duplex mode
+    // uart.Instance = (USART_TypeDef *)pinmap_peripheral(p.name, PinMap_UART_TX);
 
-    enable_clock((uint32_t)uart.Instance);
+    // enable_clock((uint32_t)uart.Instance);
 
-    dma_init((uint32_t)uart.Instance, DMA_RX, &hdma_rx, 0);
-    dma_set_irq_priority((uint32_t)uart.Instance, DMA_RX, 0);
-    __HAL_LINKDMA(&uart, hdmarx, hdma_rx);
+    // dma_init((uint32_t)uart.Instance, DMA_RX, &hdma_rx, 0);
+    // dma_set_irq_priority((uint32_t)uart.Instance, DMA_RX, 0);
+    // __HAL_LINKDMA(&uart, hdmarx, hdma_rx);
 
-    dma_init((uint32_t)uart.Instance, DMA_TX, &hdma_tx, 0);
-    dma_set_irq_priority((uint32_t)uart.Instance, DMA_TX, 0);
-    __HAL_LINKDMA(&uart, hdmatx, hdma_tx);
+    // dma_init((uint32_t)uart.Instance, DMA_TX, &hdma_tx, 0);
+    // dma_set_irq_priority((uint32_t)uart.Instance, DMA_TX, 0);
+    // __HAL_LINKDMA(&uart, hdmatx, hdma_tx);
 
-    // set some reasonable defaults
-    uart.Init.BaudRate = 115200;
-    uart.Init.WordLength = UART_WORDLENGTH_8B;
-    uart.Init.StopBits = UART_STOPBITS_1;
-    uart.Init.Parity = UART_PARITY_NONE;
-    uart.Init.HwFlowCtl = UART_HWCONTROL_NONE;
-    uart.Init.Mode = UART_MODE_RX;
-    uart.Init.OverSampling = UART_OVERSAMPLING_16;
+    // // set some reasonable defaults
+    // uart.Init.BaudRate = 115200;
+    // uart.Init.WordLength = UART_WORDLENGTH_8B;
+    // uart.Init.StopBits = UART_STOPBITS_1;
+    // uart.Init.Parity = UART_PARITY_NONE;
+    // uart.Init.HwFlowCtl = UART_HWCONTROL_NONE;
+    // uart.Init.Mode = UART_MODE_RX;
+    // uart.Init.OverSampling = UART_OVERSAMPLING_16;
 
-    for (unsigned i = 0; i < ARRAY_SIZE(instances); ++i)
-    {
-        if (instances[i] == NULL)
-        {
-            instances[i] = this;
-            break;
-        }
-    }
+    // for (unsigned i = 0; i < ARRAY_SIZE(instances); ++i)
+    // {
+    //     if (instances[i] == NULL)
+    //     {
+    //         instances[i] = this;
+    //         break;
+    //     }
+    // }
 
     status = 0;
 }
