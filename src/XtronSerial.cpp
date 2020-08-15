@@ -233,13 +233,12 @@ XtronSerial::XtronSerial(Pin& tx, Pin& rx) : Serial(tx, rx)
     ZERO(hdma_rx);
 
     // only the TX pin is operable in half-duplex mode
-    pinmap_peripheral(tx.name, PinMap_UART_TX);
-    uart.Instance = (USART_TypeDef *)pinmap_peripheral(rx.name, PinMap_UART_RX);
+    uart.Instance = (USART_TypeDef *)pinmap_peripheral(rx.name, PinMap_UART_RX, 0);
 
     pin_mode(tx.name, PullNone);
-    pin_function(tx.name, pinmap_function(tx.name, PinMap_UART_TX));
+    pin_function(tx.name, pinmap_function(tx.name, PinMap_UART_TX, 0));
     pin_mode(rx.name, PullNone);
-    pin_function(rx.name, pinmap_function(rx.name, PinMap_UART_RX));
+    pin_function(rx.name, pinmap_function(rx.name, PinMap_UART_RX, 0));
 
     enable_clock((uint32_t)uart.Instance);
 
