@@ -117,7 +117,6 @@ extern "C" void HAL_UART_ErrorCallback(UART_HandleTypeDef *hspi)
     extern "C" void nm() { ZSingleWireSerial::_complete(id, 0); }
 
 DEFIRQ(USART1_IRQHandler, USART1_BASE)
-DEFIRQ(USART2_IRQHandler, USART2_BASE)
 #ifdef USART6_BASE
 DEFIRQ(USART6_IRQHandler, USART6_BASE)
 #endif
