@@ -46,8 +46,8 @@ namespace codal
         // only works with a TX uart pin on STM.
         XtronSerial(ZPin& tx, ZPin& rx);
 
-        virtual int putc(char c);
-        virtual int getc();
+        virtual int codalPutc(char c);
+        virtual int codalGetc();
 
         //int send(uint8_t* data, int len);
         int receive(uint8_t* data, int len);

@@ -231,7 +231,7 @@ XtronSerial::XtronSerial(ZPin& tx, ZPin& rx) : Serial(tx, rx)
 }
 
 
-int XtronSerial::putc(char c)
+int XtronSerial::codalPutc(char c)
 {
     //  __HAL_UART_CLEAR_FLAG(&uart,UART_FLAG_TC);
     // __HAL_UART_ENABLE_IT(&uart, UART_IT_TC);
@@ -246,7 +246,7 @@ int XtronSerial::putc(char c)
     return DEVICE_OK;
 }
 
-int XtronSerial::getc()
+int XtronSerial::codalGetc()
 {
     char c = 0;
     int res = receive((uint8_t*)&c, 1);
