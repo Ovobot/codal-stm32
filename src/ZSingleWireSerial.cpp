@@ -98,28 +98,28 @@ void ZSingleWireSerial::_complete(uint32_t instance, uint32_t mode)
     }
 }
 
-extern "C" void HAL_UART_TxCpltCallback(UART_HandleTypeDef *hspi)
-{
-    ZSingleWireSerial::_complete((uint32_t)hspi->Instance, SWS_EVT_DATA_SENT);
-}
+// extern "C" void HAL_UART_TxCpltCallback(UART_HandleTypeDef *hspi)
+// {
+//     ZSingleWireSerial::_complete((uint32_t)hspi->Instance, SWS_EVT_DATA_SENT);
+// }
 
-extern "C" void HAL_UART_RxCpltCallback(UART_HandleTypeDef *hspi)
-{
-    ZSingleWireSerial::_complete((uint32_t)hspi->Instance, SWS_EVT_DATA_RECEIVED);
-}
+// extern "C" void HAL_UART_RxCpltCallback(UART_HandleTypeDef *hspi)
+// {
+//     ZSingleWireSerial::_complete((uint32_t)hspi->Instance, SWS_EVT_DATA_RECEIVED);
+// }
 
-extern "C" void HAL_UART_ErrorCallback(UART_HandleTypeDef *hspi)
-{
-    ZSingleWireSerial::_complete((uint32_t)hspi->Instance, SWS_EVT_ERROR);
-}
+// extern "C" void HAL_UART_ErrorCallback(UART_HandleTypeDef *hspi)
+// {
+//     ZSingleWireSerial::_complete((uint32_t)hspi->Instance, SWS_EVT_ERROR);
+// }
 
-#define DEFIRQ(nm, id)                                                                             \
-    extern "C" void nm() { ZSingleWireSerial::_complete(id, 0); }
+// #define DEFIRQ(nm, id)                                                                             \
+//     extern "C" void nm() { ZSingleWireSerial::_complete(id, 0); }
 
 //DEFIRQ(USART1_IRQHandler, USART1_BASE)
-#ifdef USART6_BASE
-DEFIRQ(USART6_IRQHandler, USART6_BASE)
-#endif
+// #ifdef USART6_BASE
+// DEFIRQ(USART6_IRQHandler, USART6_BASE)
+// #endif
 
 
 void ZSingleWireSerial::configureRxInterrupt(int enable)

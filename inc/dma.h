@@ -16,6 +16,7 @@ extern "C" {
 #define DMA_FLAG_1BYTE 0
 #define DMA_FLAG_2BYTE 1
 #define DMA_FLAG_4BYTE 2
+#define DMA_FLAG_CIRCLE 4
 
 int dma_init(uint32_t peripheral, uint8_t rxdx, DMA_HandleTypeDef *obj, int flags);
 

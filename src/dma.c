@@ -205,7 +205,11 @@ int dma_init(uint32_t peripheral, uint8_t rxdx, DMA_HandleTypeDef *obj, int flag
         obj->Init.PeriphDataAlignment = DMA_PDATAALIGN_BYTE;
         obj->Init.MemDataAlignment = DMA_MDATAALIGN_BYTE;
     }
-    obj->Init.Mode = DMA_NORMAL;
+    if (flags & DMA_FLAG_CIRCLE) {
+        obj->Init.Mode = DMA_CIRCULAR;
+    } else {
+        obj->Init.Mode = DMA_NORMAL;
+    }
     obj->Init.Priority = rxdx == DMA_RX ? DMA_PRIORITY_HIGH : DMA_PRIORITY_LOW;
 
     if (map->dma == 1)
