@@ -41,7 +41,7 @@ protected:
     codal::Pin &sda, &scl;
     bool needsInit;
     void init_internal();
-
+    void resetI2C();
 public:
     /**
      * Constructor.

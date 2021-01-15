@@ -36,7 +36,7 @@ DEALINGS IN THE SOFTWARE.
 #else
 #include "stm32f4xx_ll_i2c.h"
 #endif
-
+//#define ID_PIN_LED_RED      (DEVICE_ID_IO_P0 + 15)
 namespace codal
 {
 
@@ -73,6 +73,40 @@ void ZI2C::init_internal()
 
     int res = HAL_I2C_Init(&i2c);
     CODAL_ASSERT(res == HAL_OK, DEVICE_HARDWARE_CONFIGURATION_ERROR);
+}
+
+void ZI2C::resetI2C() 
+{
+    switch ((uint32_t)i2c.Instance)
+    {
+        case I2C1_BASE:
+            __HAL_RCC_I2C1_FORCE_RESET();
+            __HAL_RCC_I2C1_RELEASE_RESET();
+            break;
+        case I2C2_BASE:
+            __HAL_RCC_I2C2_FORCE_RESET();
+            __HAL_RCC_I2C2_RELEASE_RESET();
+            break;
+#ifdef I2C3_BASE
+        case I2C3_BASE:
+            __HAL_RCC_I2C3_FORCE_RESET();
+            __HAL_RCC_I2C3_RELEASE_RESET();
+            break;
+#endif
+    }
+
+    memset(&i2c, 0, sizeof(i2c));
+
+    i2c.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
+    i2c.Init.ClockSpeed = 100000;
+    i2c.Init.DualAddressMode = I2C_DUALADDRESS_DISABLE;
+    i2c.Init.DutyCycle = I2C_DUTYCYCLE_16_9;
+    i2c.Init.GeneralCallMode = I2C_GENERALCALL_DISABLE;
+    i2c.Init.NoStretchMode = I2C_NOSTRETCH_DISABLE;
+    i2c.Init.OwnAddress1 = 0xFE;
+    i2c.Init.OwnAddress2 = 0xFE;
+
+    needsInit = true;
 }
 
 ZI2C::ZI2C(codal::Pin &sda, codal::Pin &scl) : codal::I2C(sda, scl), sda(sda), scl(scl)
@@ -113,8 +147,11 @@ int ZI2C::write(uint16_t address, uint8_t *data, int len, bool repeated)
 
     if (res == HAL_OK)
         return DEVICE_OK;
-    else
+    else {
+        resetI2C(); 
         return DEVICE_I2C_ERROR;
+    }
+        
 }
 
 int ZI2C::read(uint16_t address, uint8_t *data, int len, bool repeated)
@@ -129,9 +166,15 @@ int ZI2C::read(uint16_t address, uint8_t *data, int len, bool repeated)
 
     if (res == HAL_OK)
         return DEVICE_OK;
-    else
+    else {
+        //need reset i2c 
+        resetI2C(); 
         return DEVICE_I2C_ERROR;
+    }
 }
+
+//ZPin ledLeft(ID_PIN_LED_RED, PB_0, PIN_CAPABILITY_AD);
+
 
 int ZI2C::readRegister(uint16_t address, uint8_t reg, uint8_t *data, int length, bool repeated)
 {
@@ -139,10 +182,14 @@ int ZI2C::readRegister(uint16_t address, uint8_t reg, uint8_t *data, int length,
     init_internal();
     auto res = HAL_I2C_Mem_Read(&i2c, address, reg, I2C_MEMADD_SIZE_8BIT, data, length, I2C_TIMEOUT);
 
-    if (res == HAL_OK)
+    if (res == HAL_OK) {
         return DEVICE_OK;
-    else
+    } else {
+        //need reset i2c 
+        resetI2C(); 
         return DEVICE_I2C_ERROR;
+    }
+        
 }
 
 int ZI2C::setSleep(bool sleepMode)
